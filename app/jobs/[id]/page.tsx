@@ -1,17 +1,17 @@
-"use client"
-
-import { useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
+
+
+export async function generateStaticParams() {
+
+}
 
 export default function JobRedirect() {
   const params = useParams()
   const router = useRouter()
 
-  useEffect(() => {
     if (params.id) {
       router.replace(`/jobs/detail?id=${params.id}`)
     }
-  }, [params.id, router])
 
   return (
       <div className="min-h-screen flex items-center justify-center">
