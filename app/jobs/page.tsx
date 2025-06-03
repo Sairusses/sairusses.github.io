@@ -29,13 +29,13 @@ export default function JobsPage() {
   const fetchJobs = async () => {
     try {
       let query = supabase
-        .from("jobs")
-        .select(`
+          .from("jobs")
+          .select(`
           *,
           client:users(*)
         `)
-        .eq("status", "open")
-        .order("created_at", { ascending: false })
+          .eq("status", "open")
+          .order("created_at", { ascending: false })
 
       if (searchTerm) {
         query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`)
@@ -67,143 +67,143 @@ export default function JobsPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar />
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
 
-      <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
-            {userProfile?.role === "client" ? "My Jobs" : "Browse Jobs"}
-          </h1>
+        <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">
+              {userProfile?.role === "client" ? "My Jobs" : "Browse Jobs"}
+            </h1>
 
-          {/* Search and Filters */}
-          <div className="flex flex-col md:flex-row gap-4 mb-6">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <Input
-                placeholder="Search jobs..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-
-            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-              <SelectTrigger className="w-full md:w-48">
-                <SelectValue placeholder="Category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
-                {categories.map((category) => (
-                  <SelectItem key={category} value={category}>
-                    {category}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Select value={budgetFilter} onValueChange={setBudgetFilter}>
-              <SelectTrigger className="w-full md:w-48">
-                <SelectValue placeholder="Budget Range" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="any">Any Budget</SelectItem>
-                <SelectItem value="0-500">$0 - $500</SelectItem>
-                <SelectItem value="500-1000">$500 - $1,000</SelectItem>
-                <SelectItem value="1000-5000">$1,000 - $5,000</SelectItem>
-                <SelectItem value="5000+">$5,000+</SelectItem>
-              </SelectContent>
-            </Select>
-
-            {userProfile?.role === "client" && (
-              <Link href="/jobs/post">
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white">Post New Job</Button>
-              </Link>
-            )}
-          </div>
-        </div>
-
-        {loading ? (
-          <div className="flex justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          </div>
-        ) : (
-          <div className="grid gap-6">
-            {jobs.map((job) => (
-              <Card key={job.id} className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <CardTitle className="text-xl mb-2">{job.title}</CardTitle>
-                      <CardDescription className="text-base">{job.description}</CardDescription>
-                    </div>
-                    <div className="text-right">
-                      {job.budget_min && job.budget_max && (
-                        <div className="flex items-center text-green-600 font-semibold">
-                          <DollarSign className="h-4 w-4 mr-1" />${job.budget_min} - ${job.budget_max}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-wrap gap-4 mb-4">
-                    {job.category && (
-                      <div className="flex items-center text-sm text-gray-600">
-                        <Filter className="h-4 w-4 mr-1" />
-                        {job.category}
-                      </div>
-                    )}
-                    {job.timeline && (
-                      <div className="flex items-center text-sm text-gray-600">
-                        <Clock className="h-4 w-4 mr-1" />
-                        {job.timeline}
-                      </div>
-                    )}
-                    {job.client?.location && (
-                      <div className="flex items-center text-sm text-gray-600">
-                        <MapPin className="h-4 w-4 mr-1" />
-                        {job.client.location}
-                      </div>
-                    )}
-                  </div>
-
-                  {job.required_skills && job.required_skills.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {job.required_skills.map((skill, index) => (
-                        <Badge key={index} variant="secondary">
-                          {skill}
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
-
-                  <div className="flex justify-between items-center">
-                    <div className="text-sm text-gray-500">
-                      Posted by {job.client?.full_name} • {new Date(job.created_at).toLocaleDateString()}
-                    </div>
-                    <Link href={`/jobs/${job.id}`}>
-                      <Button variant="outline">View Details</Button>
-                    </Link>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-
-            {jobs.length === 0 && !loading && (
-              <div className="text-center py-12">
-                <Search className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No jobs found</h3>
-                <p className="text-gray-600">
-                  {searchTerm || categoryFilter || budgetFilter
-                    ? "Try adjusting your search criteria"
-                    : "No jobs are currently available"}
-                </p>
+            {/* Search and Filters */}
+            <div className="flex flex-col md:flex-row gap-4 mb-6">
+              <div className="flex-1 relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Input
+                    placeholder="Search jobs..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                />
               </div>
-            )}
+
+              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                <SelectTrigger className="w-full md:w-48">
+                  <SelectValue placeholder="Category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Categories</SelectItem>
+                  {categories.map((category) => (
+                      <SelectItem key={category} value={category}>
+                        {category}
+                      </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Select value={budgetFilter} onValueChange={setBudgetFilter}>
+                <SelectTrigger className="w-full md:w-48">
+                  <SelectValue placeholder="Budget Range" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="any">Any Budget</SelectItem>
+                  <SelectItem value="0-500">$0 - $500</SelectItem>
+                  <SelectItem value="500-1000">$500 - $1,000</SelectItem>
+                  <SelectItem value="1000-5000">$1,000 - $5,000</SelectItem>
+                  <SelectItem value="5000+">$5,000+</SelectItem>
+                </SelectContent>
+              </Select>
+
+              {userProfile?.role === "client" && (
+                  <Link href="/jobs/post">
+                    <Button className="bg-blue-600 hover:bg-blue-700 text-white">Post New Job</Button>
+                  </Link>
+              )}
+            </div>
           </div>
-        )}
+
+          {loading ? (
+              <div className="flex justify-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+              </div>
+          ) : (
+              <div className="grid gap-6">
+                {jobs.map((job) => (
+                    <Card key={job.id} className="hover:shadow-lg transition-shadow">
+                      <CardHeader>
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <CardTitle className="text-xl mb-2">{job.title}</CardTitle>
+                            <CardDescription className="text-base">{job.description}</CardDescription>
+                          </div>
+                          <div className="text-right">
+                            {job.budget_min && job.budget_max && (
+                                <div className="flex items-center text-green-600 font-semibold">
+                                  <DollarSign className="h-4 w-4 mr-1" />${job.budget_min} - ${job.budget_max}
+                                </div>
+                            )}
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="flex flex-wrap gap-4 mb-4">
+                          {job.category && (
+                              <div className="flex items-center text-sm text-gray-600">
+                                <Filter className="h-4 w-4 mr-1" />
+                                {job.category}
+                              </div>
+                          )}
+                          {job.timeline && (
+                              <div className="flex items-center text-sm text-gray-600">
+                                <Clock className="h-4 w-4 mr-1" />
+                                {job.timeline}
+                              </div>
+                          )}
+                          {job.client?.location && (
+                              <div className="flex items-center text-sm text-gray-600">
+                                <MapPin className="h-4 w-4 mr-1" />
+                                {job.client.location}
+                              </div>
+                          )}
+                        </div>
+
+                        {job.required_skills && job.required_skills.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mb-4">
+                              {job.required_skills.map((skill, index) => (
+                                  <Badge key={index} variant="secondary">
+                                    {skill}
+                                  </Badge>
+                              ))}
+                            </div>
+                        )}
+
+                        <div className="flex justify-between items-center">
+                          <div className="text-sm text-gray-500">
+                            Posted by {job.client?.full_name} • {new Date(job.created_at).toLocaleDateString()}
+                          </div>
+                          <Link href={`/jobs/detail?id=${job.id}`}>
+                            <Button variant="outline">View Details</Button>
+                          </Link>
+                        </div>
+                      </CardContent>
+                    </Card>
+                ))}
+
+                {jobs.length === 0 && !loading && (
+                    <div className="text-center py-12">
+                      <Search className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">No jobs found</h3>
+                      <p className="text-gray-600">
+                        {searchTerm || categoryFilter || budgetFilter
+                            ? "Try adjusting your search criteria"
+                            : "No jobs are currently available"}
+                      </p>
+                    </div>
+                )}
+              </div>
+          )}
+        </div>
       </div>
-    </div>
   )
 }
