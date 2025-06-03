@@ -104,7 +104,7 @@ export default function ClientJobsPage() {
             <div className="mb-8">
               <div className="flex justify-between items-center mb-4">
                 <h1 className="text-3xl font-bold text-gray-900">My Jobs</h1>
-                <Link href="/jobs?view=post">
+                <Link href="/jobs/post">
                   <Button className="bg-blue-600 hover:bg-blue-700 text-white">
                     <Plus className="h-4 w-4 mr-2" />
                     Post New Job
@@ -191,14 +191,14 @@ export default function ClientJobsPage() {
                               Status: <span className="capitalize">{job.status.replace("_", " ")}</span>
                             </div>
                             <div className="flex gap-2">
-                              <Link href={`/jobs?view=detail&id=${job.id}`}>
+                              <Link href={`/client/jobs/details?id=${job.id}`}>
                                 <Button variant="outline" size="sm">
                                   <Eye className="h-4 w-4 mr-2" />
                                   View
                                 </Button>
                               </Link>
                               {job.status === "open" && (
-                                  <Link href={`/jobs?view=edit&id=${job.id}`}>
+                                  <Link href={`/jobs/${job.id}/edit`}>
                                     <Button variant="outline" size="sm">
                                       <Edit className="h-4 w-4 mr-2" />
                                       Edit
@@ -228,7 +228,7 @@ export default function ClientJobsPage() {
                               ? "Try adjusting your search criteria"
                               : "You haven't posted any jobs yet"}
                         </p>
-                        <Link href="/jobs?view=post">
+                        <Link href="/jobs/post">
                           <Button className="bg-blue-600 hover:bg-blue-700 text-white">Post Your First Job</Button>
                         </Link>
                       </div>

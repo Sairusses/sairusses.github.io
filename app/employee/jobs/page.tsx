@@ -177,7 +177,7 @@ export default function EmployeeJobsPage() {
                             <div className="text-sm text-gray-500">
                               Posted by {job.client?.full_name} • {new Date(job.created_at).toLocaleDateString()}
                             </div>
-                            <Link href={`/jobs?view=detail&id=${job.id}`}>
+                            <Link href={`/employee/jobs/details?id=${job.id}`}>
                               <Button className="bg-blue-600 hover:bg-blue-700 text-white">
                                 <Eye className="h-4 w-4 mr-2" />
                                 View & Apply
