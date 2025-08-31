@@ -46,7 +46,7 @@ export default function LoginPage() {
                 name="email"
                 placeholder="Enter your email"
                 radius="sm"
-                type="text"
+                type="email"
               />
 
               <Input
@@ -56,7 +56,7 @@ export default function LoginPage() {
                 name="password"
                 placeholder="Enter your password"
                 radius="sm"
-                type="email"
+                type="password"
               />
               <Button color="primary" fullWidth={true} type="submit">
                 Sign In
