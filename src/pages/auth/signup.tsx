@@ -34,7 +34,13 @@ export function SignupPage() {
   async function signUpAsEmployee(e: React.FormEvent) {
     e.preventDefault();
 
-    if (formData.fullName == null) {
+    if (formData.fullName == "") {
+      addToast({
+        title: "Error signing up",
+        description: "Please enter your full name",
+        color: "danger",
+      });
+
       return;
     }
     try {
@@ -56,7 +62,7 @@ export function SignupPage() {
           color: "danger",
         });
       }
-      if (data !== null) {
+      if (!error) {
         addToast({
           title: "Logged in successfully",
           description: `Welcome to ManPower ${formData.fullName}`,
@@ -72,7 +78,13 @@ export function SignupPage() {
   async function signUpAsClient(e: React.FormEvent) {
     e.preventDefault();
 
-    if (formData.fullName == null) {
+    if (formData.fullName == "") {
+      addToast({
+        title: "Error signing up",
+        description: "Please enter your full name",
+        color: "danger",
+      });
+
       return;
     }
     try {
@@ -82,22 +94,26 @@ export function SignupPage() {
         options: {
           data: {
             fullName: formData.fullName,
-            role: "employee",
+            role: "client",
           },
         },
       });
 
       if (error) {
         addToast({
-          title: "Error signing up",
+          title: "Error logging in",
           description: error.message,
           color: "danger",
         });
       }
-      if (data !== null) {
+      if (!error) {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser;
+
         addToast({
           title: "Logged in successfully",
-          description: `Welcome to ManPower ${formData.fullName}`,
+          description: `Welcome to ManPower ${user.fullName}`,
           color: "success",
         });
       }

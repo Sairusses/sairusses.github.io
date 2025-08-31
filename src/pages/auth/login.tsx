@@ -1,10 +1,57 @@
 import { Briefcase } from "lucide-react";
 import { Card, CardHeader, CardBody } from "@heroui/card";
-import { Input, Button, Link, Form } from "@heroui/react";
-import React from "react";
+import { Input, Button, Link, Form, addToast } from "@heroui/react";
+import React, { useState } from "react";
+
+import { supabase } from "@/lib/supabase.ts";
 
 export default function LoginPage() {
-  const [action, setAction] = React.useState(null);
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  function onChange(event: any) {
+    setFormData((prevFormData: any) => {
+      return {
+        ...prevFormData,
+        [event.target.name]: event.target.value,
+      };
+    });
+  }
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: formData.email,
+        password: formData.password,
+      });
+
+      if (error) {
+        console.error("Supabase login error:", error);
+        addToast({
+          title: "Error logging in",
+          description: error.message,
+          color: "danger",
+        });
+      }
+      if (!error) {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+
+        const fullName = user?.user_metadata?.fullName || "User";
+
+        addToast({
+          title: "Logged in successfully",
+          description: `Welcome back to ManPower, ${fullName}!`,
+          color: "success",
+        });
+      }
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -32,12 +79,7 @@ export default function LoginPage() {
           <CardBody>
             <Form
               className="w-full flex flex-col gap-4 items-center"
-              onReset={() => setAction(null)}
-              onSubmit={(e: { preventDefault: () => void }) => {
-                e.preventDefault();
-
-                setAction(null);
-              }}
+              onSubmit={onSubmit}
             >
               <Input
                 errorMessage="Please enter a valid username"
@@ -47,6 +89,7 @@ export default function LoginPage() {
                 placeholder="Enter your email"
                 radius="sm"
                 type="email"
+                onChange={onChange}
               />
 
               <Input
@@ -57,15 +100,11 @@ export default function LoginPage() {
                 placeholder="Enter your password"
                 radius="sm"
                 type="password"
+                onChange={onChange}
               />
-              <Button color="primary" fullWidth={true} type="submit">
+              <Button color="primary" fullWidth={true} type="submit" onChange={onChange}>
                 Sign In
               </Button>
-              {action && (
-                <div className="text-small text-default-500">
-                  Action: <code>{action}</code>
-                </div>
-              )}
             </Form>
 
             <div className="mt-6 text-center">
