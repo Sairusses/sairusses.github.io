@@ -8,9 +8,12 @@ import {
   Input,
   Button,
   Link,
+  addToast,
 } from "@heroui/react";
 import { Briefcase, User, Building } from "lucide-react";
-import { useState } from "react";
+import React, { useState } from "react";
+
+import { supabase } from "@/lib/supabase.ts";
 
 export function SignupPage() {
   const [formData, setFormData] = useState({
@@ -26,6 +29,81 @@ export function SignupPage() {
         [event.target.name]: event.target.value,
       };
     });
+  }
+  // On Submit function for employee form
+  async function signUpAsEmployee(e: React.FormEvent) {
+    e.preventDefault();
+
+    if (formData.fullName == null) {
+      return;
+    }
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: {
+            fullName: formData.fullName,
+            role: "employee",
+          },
+        },
+      });
+
+      if (error) {
+        addToast({
+          title: "Error signing up",
+          description: error.message,
+          color: "danger",
+        });
+      }
+      if (data !== null) {
+        addToast({
+          title: "Logged in successfully",
+          description: `Welcome to ManPower ${formData.fullName}`,
+          color: "success",
+        });
+      }
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  // On Submit function for client form
+  async function signUpAsClient(e: React.FormEvent) {
+    e.preventDefault();
+
+    if (formData.fullName == null) {
+      return;
+    }
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: {
+            fullName: formData.fullName,
+            role: "employee",
+          },
+        },
+      });
+
+      if (error) {
+        addToast({
+          title: "Error signing up",
+          description: error.message,
+          color: "danger",
+        });
+      }
+      if (data !== null) {
+        addToast({
+          title: "Logged in successfully",
+          description: `Welcome to ManPower ${formData.fullName}`,
+          color: "success",
+        });
+      }
+    } catch (error: any) {
+      throw error;
+    }
   }
 
   return (
@@ -62,7 +140,10 @@ export function SignupPage() {
                   </div>
                 }
               >
-                <Form className="flex flex-col gap-4 w-full">
+                <Form
+                  className="flex flex-col gap-4 w-full"
+                  onSubmit={signUpAsEmployee}
+                >
                   <Input
                     errorMessage="Please enter a valid full name"
                     label="Full Name"
@@ -114,7 +195,10 @@ export function SignupPage() {
                   </div>
                 }
               >
-                <Form className="gap-4">
+                <Form
+                  className="flex flex-col gap-4 w-full"
+                  onSubmit={signUpAsClient}
+                >
                   <Input
                     errorMessage="Please enter a valid full name"
                     fullWidth={true}
