@@ -31,39 +31,44 @@ export default function ClientNavbar() {
           </NavbarBrand>
         </NavbarContent>
         <NavbarContent justify="end">
+          {/* Dashboard */}
           <NavbarItem className="hidden lg:flex">
             <Link
               className="text-gray-700 hover:text-blue-600 transition-colors text-lg font-medium"
-              href={"/"}
+              href={"/client/dashboard"}
             >
               Dashboard
             </Link>
           </NavbarItem>
+          {/* Jobs */}
           <NavbarItem className="hidden lg:flex">
             <Link
               className="text-gray-700 hover:text-blue-600 transition-colors text-lg font-medium pl-5"
-              href={"/"}
+              href={"/client/jobs"}
             >
               My Jobs
             </Link>
           </NavbarItem>
+          {/* Proposals */}
           <NavbarItem className="hidden lg:flex">
             <Link
               className="text-gray-700 hover:text-blue-600 transition-colors text-lg font-medium pl-5"
-              href={"/"}
+              href={"/client/proposals"}
             >
               Proposals
             </Link>
           </NavbarItem>
+          {/* Messages */}
           <NavbarItem className="hidden lg:flex">
             <Link
               className="text-gray-700 hover:text-blue-600 transition-colors text-lg font-medium pl-5"
-              href={"/"}
+              href={"/messages"}
             >
               Messages
             </Link>
           </NavbarItem>
           <span />
+          {/* Profile */}
           <Dropdown placement="bottom-end">
             <DropdownTrigger>
               <Avatar
