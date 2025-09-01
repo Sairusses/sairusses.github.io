@@ -6,7 +6,7 @@ import IndexPage from "@/pages/index";
 import LoginPage from "@/pages/auth/login.tsx";
 import { SignupPage } from "@/pages/auth/signup.tsx";
 import ClientDashboard from "@/pages/client/dashboard.tsx";
-import EmployeeDashboard from "@/pages/employee/dashboard.tsx";
+import EmployeeDashboard from "@/pages/employee/employee-dashboard.tsx";
 
 function App() {
   return (

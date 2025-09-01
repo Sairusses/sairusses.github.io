@@ -34,7 +34,7 @@ export function SignupPage() {
   async function signUpAsEmployee(e: React.FormEvent) {
     e.preventDefault();
 
-    if (formData.fullName == "") {
+    if (formData.fullName == "" || formData.fullName.trim() === "") {
       addToast({
         title: "Error signing up",
         description: "Please enter your full name",
@@ -44,7 +44,7 @@ export function SignupPage() {
       return;
     }
     try {
-      const { data, error } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
@@ -64,7 +64,7 @@ export function SignupPage() {
       }
       if (!error) {
         addToast({
-          title: "Logged in successfully",
+          title: "Signed up successfully",
           description: `Welcome to ManPower ${formData.fullName}`,
           color: "success",
         });
@@ -78,7 +78,7 @@ export function SignupPage() {
   async function signUpAsClient(e: React.FormEvent) {
     e.preventDefault();
 
-    if (formData.fullName == "") {
+    if (!formData.fullName || formData.fullName.trim() === "") {
       addToast({
         title: "Error signing up",
         description: "Please enter your full name",
@@ -88,7 +88,7 @@ export function SignupPage() {
       return;
     }
     try {
-      const { data, error } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
@@ -101,19 +101,16 @@ export function SignupPage() {
 
       if (error) {
         addToast({
-          title: "Error logging in",
+          title: "Error signing uo",
           description: error.message,
           color: "danger",
         });
       }
       if (!error) {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser;
 
         addToast({
-          title: "Logged in successfully",
-          description: `Welcome to ManPower ${user.fullName}`,
+          title: "Signed up successfully",
+          description: `Welcome to ManPower ${formData.fullName}`,
           color: "success",
         });
       }
