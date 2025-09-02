@@ -1,8 +1,9 @@
-import {useState, useRef, useEffect} from "react";
+import { useState, useRef, useEffect } from "react";
 import { Upload, X, File, FileText, Download, ImageIcon } from "lucide-react";
+import { addToast, Button, Progress } from "@heroui/react";
+import { Card } from "@heroui/card";
 
-import {getSupabaseClient, supabase} from "@/lib/supabase";
-import {addToast, Progress} from "@heroui/react";
+import { getSupabaseClient } from "@/lib/supabase";
 
 interface FileUploadProps {
   onFileUploaded?: (fileUrl: string, fileName: string) => void;
@@ -153,34 +154,7 @@ export function FileUpload({
     }
 
     try {
-      // Create unique file name
-      const fileExt = file.name.split(".").pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-      const filePath = `${uploadType}/${user.id}/${fileName}`;
-
-      // Upload to Supabase Storage using the correct bucket name
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from("uploads")
-        .upload(filePath, file, {
-          cacheControl: "3600",
-          upsert: false,
-        });
-
-      if (uploadError) {
-        addToast({
-          title: "Upload Error",
-          description: `${uploadError}`,
-          color: "danger",
-        });
-        throw uploadError;
-      }
-
-      // Get public URL
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from("uploads").getPublicUrl(filePath);
-
-      // Save file record to database
+      // First create DB record with placeholder file_url
       const { data: fileRecord, error: dbError } = await supabase
         .from("file_uploads")
         .insert({
@@ -189,18 +163,44 @@ export function FileUpload({
           proposal_id: proposalId || null,
           contract_id: contractId || null,
           file_name: file.name,
-          file_url: publicUrl,
           file_type: file.type,
           file_size: file.size,
           upload_type: uploadType,
+          file_url: "", // update later
         })
         .select()
         .single();
 
       if (dbError) throw dbError;
 
+      const fileId = fileRecord.id;
+      const filePath = `${uploadType}/${user.id}/${fileId}`; // 👈 fileId as file name
+
+      // Upload file to Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from("uploads")
+        .upload(filePath, file, {
+          cacheControl: "3600",
+          upsert: true,
+        });
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("uploads").getPublicUrl(filePath);
+
+      // Update DB with actual URL
+      const { error: updateError } = await supabase
+        .from("file_uploads")
+        .update({ file_url: publicUrl })
+        .eq("id", fileId);
+
+      if (updateError) throw updateError;
+
       return {
-        id: fileRecord.id,
+        id: fileId,
         file_name: file.name,
         file_url: publicUrl,
         file_type: file.type,
@@ -211,8 +211,7 @@ export function FileUpload({
       addToast({
         title: "Upload failed",
         description:
-          error.message ||
-          "Failed to upload file. Please check if the storage bucket exists.",
+          error.message || "Failed to upload file. Please try again.",
         color: "danger",
       });
 
@@ -287,12 +286,31 @@ export function FileUpload({
 
   const removeFile = async (fileId: string) => {
     try {
-      const { error } = await supabase
+      // Fetch file info (to get user_id and uploadType)
+      const { data: fileRecord, error: fetchError } = await supabase
+        .from("file_uploads")
+        .select("user_id, upload_type")
+        .eq("id", fileId)
+        .single();
+
+      if (fetchError) throw fetchError;
+
+      const filePath = `${fileRecord.upload_type}/${fileRecord.user_id}/${fileId}`;
+
+      // Remove from storage
+      const { error: storageError } = await supabase.storage
+        .from("uploads")
+        .remove([filePath]);
+
+      if (storageError) throw storageError;
+
+      // Remove DB record
+      const { error: dbError } = await supabase
         .from("file_uploads")
         .delete()
         .eq("id", fileId);
 
-      if (error) throw error;
+      if (dbError) throw dbError;
 
       setFiles(files.filter((f) => f.id !== fileId));
 
@@ -301,6 +319,7 @@ export function FileUpload({
         description: "File has been deleted successfully",
       });
     } catch (error: any) {
+      console.error("Remove file error:", error);
       addToast({
         title: "Error",
         description: "Failed to remove file",
@@ -374,7 +393,7 @@ export function FileUpload({
             Uploaded Files ({files.length}/{maxFiles})
           </h4>
           {files.map((file) => (
-            <Card key={file.id} className="p-3">
+            <Card key={file.id} className="p-3" radius="sm" shadow="sm">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3 flex-1 min-w-0">
                   {getFileIcon(file.file_type)}
