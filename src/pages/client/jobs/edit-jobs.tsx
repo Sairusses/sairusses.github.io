@@ -6,6 +6,14 @@ import { addToast } from "@heroui/toast";
 import { getSupabaseClient } from "@/lib/supabase";
 import ClientNavbar from "@/pages/client/client-navbar.tsx";
 
+const timelines = [
+  { key: "asap", label: "ASAP" },
+  { key: "1-4_weeks", label: "1-4 weeks" },
+  { key: "1-6_months", label: "1-6 months" },
+  { key: "6-12_months", label: "6-12 months" },
+  { key: "1_year+", label: "1 year+" },
+];
+
 export default function EditJobPage() {
   const { id } = useParams(); // job id from route
   const navigate = useNavigate();
@@ -22,6 +30,7 @@ export default function EditJobPage() {
   const [status, setStatus] = useState("");
   const [budgetMin, setBudgetMin] = useState("");
   const [budgetMax, setBudgetMax] = useState("");
+  const [timeline, setTimeline] = useState("");
 
   // fetch job
   useEffect(() => {
@@ -45,6 +54,7 @@ export default function EditJobPage() {
       setStatus(data.status || "open");
       setBudgetMin(data.budget_min || "");
       setBudgetMax(data.budget_max || "");
+      setTimeline(data.timeline || "");
     } catch (error: any) {
       addToast({
         title: "Error loading job",
@@ -67,6 +77,7 @@ export default function EditJobPage() {
           status,
           budget_min: budgetMin,
           budget_max: budgetMax,
+          timeline,
         })
         .eq("id", id);
 
@@ -135,6 +146,18 @@ export default function EditJobPage() {
             <SelectItem key="in_progress">In Progress</SelectItem>
             <SelectItem key="completed">Completed</SelectItem>
             <SelectItem key="cancelled">Cancelled</SelectItem>
+          </Select>
+
+          <Select
+            label="Timeline"
+            selectedKeys={timeline ? [timeline] : []}
+            onSelectionChange={(keys) =>
+              setTimeline(Array.from(keys)[0] as string)
+            }
+          >
+            {timelines.map((t) => (
+              <SelectItem key={t.key}>{t.label}</SelectItem>
+            ))}
           </Select>
 
           <div className="grid grid-cols-2 gap-4">

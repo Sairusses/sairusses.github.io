@@ -19,6 +19,7 @@ import { Plus } from "lucide-react";
 import { supabase } from "@/lib/supabase.ts";
 import ClientNavbar from "@/pages/client/client-navbar.tsx";
 import { FileUpload } from "@/components/file-upload.tsx";
+import {useNavigate} from "react-router-dom";
 
 export default function PostJob() {
   const [user, setUser] = useState<any>(null);
@@ -26,6 +27,7 @@ export default function PostJob() {
   const [selectedCategory, setSelectedCategory] = React.useState(
     new Set(["Category"]),
   );
+  // @ts-ignore
   const [selectedTimeline, setSelectedTimeline] = React.useState(
     new Set(["Timeline"]),
   );
@@ -36,6 +38,7 @@ export default function PostJob() {
   >([]);
   const [budgetMin, setBudgetMin] = useState<number | null>(null);
   const [budgetMax, setBudgetMax] = useState<number | null>(null);
+  const navigate = useNavigate();
 
   const selectedValueCategory = React.useMemo(
     () => Array.from(selectedCategory).join(", ").replace(/_/g, " "),
@@ -136,8 +139,6 @@ export default function PostJob() {
     setLoading(true);
     const formData = new FormData(e.currentTarget);
 
-    console.log(formData);
-
     try {
       // @ts-ignore
       const { data, error } = await supabase
@@ -172,7 +173,7 @@ export default function PostJob() {
         description: "Your job is now live and accepting proposals.",
       });
 
-      // router.push(`/jobs?view=detail&id=${data.id}`)
+      navigate(`/client/jobs/details?id=${data.id}`);
     } catch (error: any) {
       throw error;
     } finally {
@@ -192,8 +193,6 @@ export default function PostJob() {
     );
   }
 
-  // @ts-ignore
-  // @ts-ignore
   // @ts-ignore
   // @ts-ignore
   return (
@@ -253,7 +252,9 @@ export default function PostJob() {
                   selectedKeys={selectedCategory}
                   selectionMode="single"
                   variant="flat"
-                  onSelectionChange={setSelectedCategory}
+                  onSelectionChange={(keys) =>
+                    setSelectedCategory(new Set(keys as Set<string>))
+                  }
                 >
                   {(item) => (
                     <DropdownItem key={item.key}>{item.label}</DropdownItem>
@@ -277,7 +278,9 @@ export default function PostJob() {
                   selectedKeys={selectedTimeline}
                   selectionMode="single"
                   variant="flat"
-                  onSelectionChange={setSelectedTimeline}
+                  onSelectionChange={(keys) =>
+                    setSelectedTimeline(new Set(keys as Set<string>))
+                  }
                 >
                   {(item) => (
                     <DropdownItem key={item.key}>{item.label}</DropdownItem>
