@@ -60,6 +60,7 @@ export function FileUpload({
   >(existingFiles);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [user, setUser] = useState<any>(null);
+  // @ts-ignore
   const [loading, setLoading] = useState(true);
 
   const fetchUser = async () => {
