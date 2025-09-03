@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
-import { addToast, Button, Link } from "@heroui/react";
+import { addToast, Button, Chip, Link } from "@heroui/react";
 import { Card, CardHeader, CardBody } from "@heroui/react";
-import { Briefcase, FileText, Plus, Users } from "lucide-react";
+import { Briefcase, Edit, Eye, FileText, Plus, Users } from "lucide-react";
 
 import ClientNavbar from "@/pages/client/client-navbar.tsx";
 import { supabase } from "@/lib/supabase.ts";
+import {Job} from "@/lib/types.ts";
 
 export default function ClientDashboard() {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [jobs, setJobs] = useState<Job[]>([]);
 
   const fetchUser = async () => {
     try {
@@ -32,6 +34,27 @@ export default function ClientDashboard() {
   useEffect(() => {
     fetchUser();
   }, []);
+
+  const fetchDashboardData = async () => {
+    const { data: jobsData } = await supabase
+      .from("jobs")
+      .select("*")
+      .eq("client_id", user?.id)
+      .order("created_at", { ascending: false });
+
+    setJobs(jobsData || []);
+  };
+
+  useEffect(() => {
+    if (user) {
+      fetchDashboardData();
+    }
+  }, [user]);
+
+  const stats = {
+    totalJobs: jobs.length,
+    activeJobs: jobs.filter((job) => job.status === "open").length,
+  };
 
   if (loading) {
     return (
@@ -61,7 +84,7 @@ export default function ClientDashboard() {
               <Briefcase className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardBody className="items-start pl-10 py-0">
-              <div className="text-2xl font-bold">3</div>
+              <div className="text-2xl font-bold">{stats.totalJobs}</div>
               <div className="text-sm text-gray-600 pb-5">
                 Jobs posted on platform
               </div>
@@ -74,13 +97,13 @@ export default function ClientDashboard() {
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardBody className="items-start pl-10 py-0">
-              <div className="text-2xl font-bold">2</div>
+              <div className="text-2xl font-bold">{stats.activeJobs}</div>
               <div className="text-sm text-gray-600 pb-5">
                 Currently accepting proposals
               </div>
             </CardBody>
           </Card>
-          {/* Jobs Stats */}
+          {/* Proposals Stats */}
           <Card radius="sm" shadow="sm">
             <CardHeader className="flex flex-row items-center justify-between px-10 pt-5">
               <div className="text-md font-medium">Pending Proposals</div>
@@ -112,14 +135,58 @@ export default function ClientDashboard() {
               </Link>
             </CardHeader>
             <CardBody>
-              <div className="text-center py-8 text-gray-500">
-                <Briefcase className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                <p className="pb-4">No jobs posted yet</p>
-                <Link href="/client/post-job">
-                  <Button color="primary" radius="sm">
-                    Post Your First Job
-                  </Button>
-                </Link>
+              <div className="space-y-4 flex flex-col">
+                {jobs.slice(0, 5).map((job) => (
+                  <Card key={job.id} radius="sm" shadow="sm">
+                    <CardBody>
+                      <div className="flex items-center justify-between p-4 rounded-lg">
+                        <div className="flex-1">
+                          <h3 className="font-medium">{job.title}</h3>
+                          <p className="text-sm text-gray-600 truncate">
+                            {job.description}
+                          </p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <Chip
+                              color={
+                                job.status === "open" ? "default" : "primary"
+                              }
+                            >
+                              {job.status}
+                            </Chip>
+                            {job.budget_min && job.budget_max && (
+                              <span className="text-sm text-gray-500">
+                            &#8369; {job.budget_min} - &#8369; {job.budget_max}
+                          </span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Link href={`/client/jobs/details?id=${job.id}`}>
+                            <Button size="sm" variant="ghost">
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                          </Link>
+                          <Link href={`/client/jobs/edit/${job.id}`}>
+                            <Button size="sm" variant="ghost">
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                          </Link>
+                        </div>
+                      </div>
+                    </CardBody>
+                  </Card>
+                ))}
+                {jobs.length === 0 && (
+                  <div className="text-center py-8 text-gray-500">
+                    <Briefcase className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                    <p>No jobs posted yet</p>
+                    <Link href="/jobs/post">
+                      <Button className="mt-4 bg-blue-600 hover:bg-blue-700 text-white">
+                        Post Your First Job
+                      </Button>
+                    </Link>
+                  </div>
+                )}
               </div>
             </CardBody>
           </Card>
@@ -135,7 +202,9 @@ export default function ClientDashboard() {
               <div className="text-center py-8 text-gray-500">
                 <FileText className="h-12 w-12 mx-auto mb-4 text-gray-300" />
                 <p>No proposals yet</p>
-                <p className="text-sm">Post a job to start receiving proposals</p>
+                <p className="text-sm">
+                  Post a job to start receiving proposals
+                </p>
               </div>
             </CardBody>
           </Card>

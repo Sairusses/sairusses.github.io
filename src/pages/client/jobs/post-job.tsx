@@ -34,6 +34,8 @@ export default function PostJob() {
   const [uploadedFiles, setUploadedFiles] = useState<
     Array<{ url: string; name: string; type: string; size: number }>
   >([]);
+  const [budgetMin, setBudgetMin] = useState<number | null>(null);
+  const [budgetMax, setBudgetMax] = useState<number | null>(null);
 
   const selectedValueCategory = React.useMemo(
     () => Array.from(selectedCategory).join(", ").replace(/_/g, " "),
@@ -137,20 +139,20 @@ export default function PostJob() {
     console.log(formData);
 
     try {
+      // @ts-ignore
       const { data, error } = await supabase
         .from("jobs")
         .insert({
           client_id: user.id,
           title: formData.get("title") as string,
           description: formData.get("description") as string,
-          category: selectedCategory,
-          budget_min:
-            Number.parseFloat(formData.get("budgetMin") as string) || null,
-          budget_max:
-            Number.parseFloat(formData.get("budgetMax") as string) || null,
+          category: selectedValueCategory,
+          budget_min: budgetMin,
+          budget_max: budgetMax,
           timeline: selectedValueTimeline,
-          skills: skills,
+          required_skills: skills,
           files: uploadedFiles,
+          status: "open",
         })
         .select()
         .single();
@@ -190,6 +192,8 @@ export default function PostJob() {
     );
   }
 
+  // @ts-ignore
+  // @ts-ignore
   // @ts-ignore
   // @ts-ignore
   return (
@@ -327,6 +331,8 @@ export default function PostJob() {
                   label="Budget Min (₱) *"
                   labelPlacement="outside"
                   name="budgetMin"
+                  value={budgetMin ?? 0}
+                  onValueChange={(val) => setBudgetMin(val ?? null)}
                   variant="bordered"
                 />
                 <NumberInput
@@ -334,6 +340,8 @@ export default function PostJob() {
                   label="Budget Max (₱) *"
                   labelPlacement="outside"
                   name="budgetMax"
+                  value={budgetMax ?? 0}
+                  onValueChange={(val) => setBudgetMax(val ?? null)}
                   variant="bordered"
                 />
               </div>
