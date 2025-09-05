@@ -44,7 +44,7 @@ export function SignupPage() {
       return;
     }
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
@@ -54,6 +54,15 @@ export function SignupPage() {
           },
         },
       });
+
+      if (data) {
+        await supabase.from("users").insert({
+          id: data.user?.id,
+          email: formData.email,
+          full_name: formData.fullName,
+          role: "employee",
+        });
+      }
 
       if (error) {
         addToast({
@@ -88,7 +97,7 @@ export function SignupPage() {
       return;
     }
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
@@ -99,6 +108,15 @@ export function SignupPage() {
         },
       });
 
+      if (data) {
+        await supabase.from("users").insert({
+          id: data.user?.id,
+          email: formData.email,
+          full_name: formData.fullName,
+          role: "employee",
+        });
+      }
+
       if (error) {
         addToast({
           title: "Error signing uo",
@@ -107,7 +125,6 @@ export function SignupPage() {
         });
       }
       if (!error) {
-
         addToast({
           title: "Signed up successfully",
           description: `Welcome to ManPower ${formData.fullName}`,
