@@ -35,6 +35,7 @@ export interface Job {
   created_at: string;
   updated_at: string;
   client?: User;
+  files?: string[];
 }
 
 export interface Proposal {
