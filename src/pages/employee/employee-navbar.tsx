@@ -31,6 +31,7 @@ export default function EmployeeNavbar() {
           </NavbarBrand>
         </NavbarContent>
         <NavbarContent justify="end">
+          {/* Dashboard */}
           <NavbarItem className="hidden lg:flex">
             <Link
               className="text-gray-700 hover:text-blue-600 transition-colors text-lg font-medium"
@@ -39,26 +40,29 @@ export default function EmployeeNavbar() {
               Dashboard
             </Link>
           </NavbarItem>
+          {/* Jobs */}
           <NavbarItem className="hidden lg:flex">
             <Link
               className="text-gray-700 hover:text-blue-600 transition-colors text-lg font-medium pl-5"
-              href={"/"}
+              href={"/employee/jobs"}
             >
               Browse Jobs
             </Link>
           </NavbarItem>
+          {/* Proposals */}
           <NavbarItem className="hidden lg:flex">
             <Link
               className="text-gray-700 hover:text-blue-600 transition-colors text-lg font-medium pl-5"
-              href={"/"}
+              href={"/employee/proposals"}
             >
               Proposals
             </Link>
           </NavbarItem>
+          {/* Contracts */}
           <NavbarItem className="hidden lg:flex">
             <Link
               className="text-gray-700 hover:text-blue-600 transition-colors text-lg font-medium pl-5"
-              href={"/"}
+              href={"/employee/contracts"}
             >
               Contracts
             </Link>
@@ -72,6 +76,7 @@ export default function EmployeeNavbar() {
             </Link>
           </NavbarItem>
           <span />
+          {/* Profile */}
           <Dropdown placement="bottom-end">
             <DropdownTrigger>
               <Avatar
