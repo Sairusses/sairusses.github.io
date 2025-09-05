@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Card, CardBody, CardHeader } from "@heroui/card";
-import {addToast, Button, Chip, Link} from "@heroui/react";
+import { addToast, Button, Chip, Link } from "@heroui/react";
 import { ArrowLeft } from "lucide-react";
 
 import { getSupabaseClient } from "@/lib/supabase";

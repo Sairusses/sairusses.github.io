@@ -15,11 +15,11 @@ import {
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Textarea } from "@heroui/input";
 import { Plus } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 import { supabase } from "@/lib/supabase.ts";
 import ClientNavbar from "@/pages/client/client-navbar.tsx";
 import { FileUpload } from "@/components/file-upload.tsx";
-import {useNavigate} from "react-router-dom";
 
 export default function PostJob() {
   const [user, setUser] = useState<any>(null);
@@ -335,8 +335,8 @@ export default function PostJob() {
                   labelPlacement="outside"
                   name="budgetMin"
                   value={budgetMin ?? 0}
-                  onValueChange={(val) => setBudgetMin(val ?? null)}
                   variant="bordered"
+                  onValueChange={(val) => setBudgetMin(val ?? null)}
                 />
                 <NumberInput
                   hideStepper={true}
@@ -344,8 +344,8 @@ export default function PostJob() {
                   labelPlacement="outside"
                   name="budgetMax"
                   value={budgetMax ?? 0}
-                  onValueChange={(val) => setBudgetMax(val ?? null)}
                   variant="bordered"
+                  onValueChange={(val) => setBudgetMax(val ?? null)}
                 />
               </div>
               <div className="flex gap-4 pt-6 w-full">

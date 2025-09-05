@@ -180,8 +180,8 @@ export default function ClientDashboard() {
                   <div className="text-center py-8 text-gray-500">
                     <Briefcase className="h-12 w-12 mx-auto mb-4 text-gray-300" />
                     <p>No jobs posted yet</p>
-                    <Link href="/jobs/post">
-                      <Button className="mt-4 bg-blue-600 hover:bg-blue-700 text-white">
+                    <Link href="/client/post-job">
+                      <Button className="mt-4" color="primary">
                         Post Your First Job
                       </Button>
                     </Link>
