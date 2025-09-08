@@ -69,7 +69,11 @@ export default function EmployeeJobsPage() {
       }
 
       if (categoryFilter) {
-        query = query.eq("category", categoryFilter);
+        const normalizedCategory = categoryFilter
+          .replace("_", " ")
+          .toLowerCase();
+
+        query = query.eq("category", normalizedCategory);
       }
 
       if (minBudget) {
@@ -97,8 +101,8 @@ export default function EmployeeJobsPage() {
   };
 
   const categories = [
-    { key: "web_dev", label: "Web Development" },
-    { key: "mobile_dev", label: "Mobile Development" },
+    { key: "web_development", label: "Web Development" },
+    { key: "mobile_development", label: "Mobile Development" },
     { key: "design", label: "Design" },
     { key: "writing", label: "Writing" },
     { key: "marketing", label: "Marketing" },
@@ -154,7 +158,10 @@ export default function EmployeeJobsPage() {
                 setCategoryFilter(value === "all" ? "" : value);
               }}
             >
-              {(category) => <SelectItem>{category.label}</SelectItem>}
+              {(category) => (
+                <SelectItem key={category.key}>{category.label}
+                </SelectItem>
+              )}
             </Select>
           </div>
         </div>
