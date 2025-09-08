@@ -17,7 +17,6 @@ import { getSupabaseClient } from "@/lib/supabase";
 import EmployeeNavbar from "@/pages/employee/employee-navbar.tsx";
 
 export default function EmployeeJobsPage() {
-  // @ts-ignore
   const [user, setUser] = useState<any>(null);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
@@ -25,6 +24,8 @@ export default function EmployeeJobsPage() {
   const [categoryFilter, setCategoryFilter] = useState("");
   const [minBudget, setMinBudget] = useState("");
   const [maxBudget, setMaxBudget] = useState("");
+
+  const [appliedJobIds, setAppliedJobIds] = useState<string[]>([]);
   const supabase = getSupabaseClient();
 
   const fetchUser = async () => {
@@ -51,8 +52,34 @@ export default function EmployeeJobsPage() {
   }, []);
 
   useEffect(() => {
-    fetchJobs();
-  }, [searchTerm, categoryFilter, minBudget, maxBudget]);
+    if (user) {
+      fetchJobs();
+      fetchEmployeeApplications();
+    }
+  }, [user, searchTerm, categoryFilter, minBudget, maxBudget]);
+
+  const fetchEmployeeApplications = async () => {
+    try {
+      const { data: proposals } = await supabase
+        .from("proposals")
+        .select("job_id")
+        .eq("employee_id", user.id);
+
+      const { data: contracts } = await supabase
+        .from("contracts")
+        .select("job_id")
+        .eq("employee_id", user.id);
+
+      const ids = [
+        ...(proposals?.map((p) => p.job_id) || []),
+        ...(contracts?.map((c) => c.job_id) || []),
+      ];
+
+      setAppliedJobIds(ids);
+    } catch (err) {
+      throw err;
+    }
+  };
 
   const fetchJobs = async () => {
     try {
@@ -116,21 +143,16 @@ export default function EmployeeJobsPage() {
 
       <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <div className="flex justify-between items-center mb-4">
-            <h1 className="text-3xl font-bold text-gray-900">Browse Jobs</h1>
-          </div>
+          <h1 className="text-3xl font-bold text-gray-900">Browse Jobs</h1>
 
           {/* Search and Filters */}
-          <div className="flex flex-col md:flex-row gap-4 items-start">
-            <div className="relative flex-auto flex-wrap">
-              <Input
-                placeholder="Search jobs..."
-                startContent={<Search />}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-            {/* Budget Filters */}
+          <div className="flex flex-col md:flex-row gap-4 items-start mt-4">
+            <Input
+              placeholder="Search jobs..."
+              startContent={<Search />}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
             <Input
               className="max-w-30"
               placeholder="Min Budget"
@@ -145,7 +167,6 @@ export default function EmployeeJobsPage() {
               value={maxBudget}
               onChange={(e) => setMaxBudget(e.target.value)}
             />
-            {/* Category Filter */}
             <Select
               className="max-w-40"
               items={categories}
@@ -171,74 +192,86 @@ export default function EmployeeJobsPage() {
           </div>
         ) : (
           <div className="grid gap-6">
-            {jobs.map((job) => (
-              <Card
-                key={job.id}
-                className="hover:shadow-lg transition-shadow p-3"
-                radius="sm"
-                shadow="sm"
-              >
-                <CardHeader>
-                  <div className="flex justify-between w-full items-start">
-                    <div className="flex-1">
-                      <div className="text-xl font-bold capitalize">
-                        {job.title}
-                      </div>
-                      <div className="text-medium mb-2 text-gray-800">
-                        {job.client_name}
-                      </div>
-                      <div className="text-base text-gray-600">
-                        {job.description}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {job.budget_min && job.budget_max && (
-                        <div className="flex items-center font-semibold">
-                          &#8369; {job.budget_min} - &#8369; {job.budget_max}
+            {jobs.map((job) => {
+              const alreadyApplied = appliedJobIds.includes(job.id);
+              // TS2345: Argument of type string is not assignable to parameter of type number
+
+              return (
+                <Card
+                  key={job.id}
+                  className="hover:shadow-lg transition-shadow p-3"
+                  radius="sm"
+                  shadow="sm"
+                >
+                  <CardHeader>
+                    <div className="flex justify-between w-full items-start">
+                      <div className="flex-1">
+                        <div className="text-xl font-bold capitalize">
+                          {job.title}
                         </div>
-                      )}
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardBody>
-                  <div className="grid grid-cols-2 ">
-                    <div>
-                      <div className="flex flex-wrap gap-4 mb-4">
-                        {job.category && (
-                          <div className="flex items-center text-sm text-gray-600">
-                            <Filter className="h-4 w-4 mr-1" />
-                            {job.category}
-                          </div>
-                        )}
-                        <div className="text-sm text-gray-500">
-                          Posted {new Date(job.created_at).toLocaleDateString()}
+                        <div className="text-medium mb-2 text-gray-800">
+                          {job.client_name}
+                        </div>
+                        <div className="text-base text-gray-600">
+                          {job.description}
                         </div>
                       </div>
-
-                      {job.required_skills &&
-                        job.required_skills.length > 0 && (
-                          <div className="flex flex-wrap gap-2 mb-4">
-                            {job.required_skills.map((skill, index) => (
-                              <Chip key={index} color="default" radius="sm">
-                                {skill}
-                              </Chip>
-                            ))}
+                      <div className="flex items-center gap-2">
+                        {job.budget_min && job.budget_max && (
+                          <div className="flex items-center font-semibold">
+                            &#8369; {job.budget_min} - &#8369; {job.budget_max}
                           </div>
                         )}
+                      </div>
                     </div>
+                  </CardHeader>
+                  <CardBody>
+                    <div className="grid grid-cols-2">
+                      <div>
+                        <div className="flex flex-wrap gap-4 mb-4">
+                          {job.category && (
+                            <div className="flex items-center text-sm text-gray-600">
+                              <Filter className="h-4 w-4 mr-1" />
+                              {job.category}
+                            </div>
+                          )}
+                          <div className="text-sm text-gray-500">
+                            Posted{" "}
+                            {new Date(job.created_at).toLocaleDateString()}
+                          </div>
+                        </div>
 
-                    <div className="flex justify-end">
-                      <Link href={`/employee/jobs/details?id=${job.id}`}>
-                        <Button color="primary" size="sm">
-                          <Eye className="h-4 w-4 mr-2" />
-                          View & Apply
-                        </Button>
-                      </Link>
+                        {Array.isArray(job.required_skills) &&
+                          job.required_skills.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mb-4">
+                              {job.required_skills.map((skill, index) => (
+                                <Chip key={index} color="default" radius="sm">
+                                  {skill}
+                                </Chip>
+                              ))}
+                            </div>
+                          )}
+                      </div>
+
+                      <div className="flex justify-end">
+                        {alreadyApplied ? (
+                          <Button disabled color="default" size="sm">
+                            Already Applied
+                          </Button>
+                        ) : (
+                          <Link href={`/employee/jobs/details?id=${job.id}`}>
+                            <Button color="primary" size="sm">
+                              <Eye className="h-4 w-4 mr-2" />
+                              View & Apply
+                            </Button>
+                          </Link>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                </CardBody>
-              </Card>
-            ))}
+                  </CardBody>
+                </Card>
+              );
+            })}
 
             {jobs.length === 0 && !loading && (
               <div className="text-center py-12">
