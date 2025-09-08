@@ -167,8 +167,8 @@ export default function ClientJobDetailsPage() {
                       <a
                         className="text-blue-600 hover:underline"
                         href={file.url}
-                        target="_blank"
                         rel="noopener noreferrer"
+                        target="_blank"
                       >
                         {file.name}
                       </a>

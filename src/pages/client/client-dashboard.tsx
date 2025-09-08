@@ -5,7 +5,7 @@ import { Briefcase, Edit, Eye, FileText, Plus, Users } from "lucide-react";
 
 import ClientNavbar from "@/pages/client/client-navbar.tsx";
 import { supabase } from "@/lib/supabase.ts";
-import {Job} from "@/lib/types.ts";
+import { Job } from "@/lib/types.ts";
 
 export default function ClientDashboard() {
   const [user, setUser] = useState<any>(null);
@@ -155,8 +155,9 @@ export default function ClientDashboard() {
                             </Chip>
                             {job.budget_min && job.budget_max && (
                               <span className="text-sm text-gray-500">
-                            &#8369; {job.budget_min} - &#8369; {job.budget_max}
-                          </span>
+                                &#8369; {job.budget_min} - &#8369;{" "}
+                                {job.budget_max}
+                              </span>
                             )}
                           </div>
                         </div>

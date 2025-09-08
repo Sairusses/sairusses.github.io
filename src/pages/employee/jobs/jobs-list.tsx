@@ -159,8 +159,7 @@ export default function EmployeeJobsPage() {
               }}
             >
               {(category) => (
-                <SelectItem key={category.key}>{category.label}
-                </SelectItem>
+                <SelectItem key={category.key}>{category.label}</SelectItem>
               )}
             </Select>
           </div>

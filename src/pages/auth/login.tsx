@@ -102,7 +102,12 @@ export default function LoginPage() {
                 type="password"
                 onChange={onChange}
               />
-              <Button color="primary" fullWidth={true} type="submit" onChange={onChange}>
+              <Button
+                color="primary"
+                fullWidth={true}
+                type="submit"
+                onChange={onChange}
+              >
                 Sign In
               </Button>
             </Form>

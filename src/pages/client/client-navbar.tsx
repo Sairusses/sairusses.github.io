@@ -8,12 +8,13 @@ import {
   DropdownTrigger,
   Avatar,
   DropdownMenu,
-  DropdownItem, addToast,
+  DropdownItem,
+  addToast,
 } from "@heroui/react";
 import { Briefcase } from "lucide-react";
+import { useEffect, useState } from "react";
 
 import { supabase } from "@/lib/supabase.ts";
-import {useEffect, useState} from "react";
 
 export default function ClientNavbar() {
   const [user, setUser] = useState<any>(null);
