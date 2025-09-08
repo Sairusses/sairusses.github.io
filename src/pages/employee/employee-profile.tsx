@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 
 import { supabase } from "@/lib/supabase";
-import ClientNavbar from "@/pages/client/client-navbar.tsx";
+import EmployeeNavbar from "@/pages/employee/employee-navbar";
 
 export default function EmployeeProfile() {
   const [user, setUser] = useState<any>(null);
@@ -271,7 +271,7 @@ export default function EmployeeProfile() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <ClientNavbar />
+      <EmployeeNavbar />
       <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Profile Settings</h1>
