@@ -145,6 +145,7 @@ export default function PostJob() {
         .from("jobs")
         .insert({
           client_id: user.id,
+          client_name: user.user_metadata.fullName,
           title: formData.get("title") as string,
           description: formData.get("description") as string,
           category: selectedValueCategory,

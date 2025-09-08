@@ -24,6 +24,7 @@ export interface User {
 export interface Job {
   id: string;
   client_id: string;
+  client_name: string;
   title: string;
   description: string;
   budget_min?: number;

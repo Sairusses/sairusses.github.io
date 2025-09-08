@@ -3,14 +3,15 @@ import type { Job } from "@/lib/types";
 import { useEffect, useState } from "react";
 import { Button, Chip, Input, Textarea, addToast, Link } from "@heroui/react";
 import { Card, CardBody, CardHeader } from "@heroui/card";
-import { Clock, Filter, File } from "lucide-react";
-import { useLocation } from "react-router-dom";
+import { Clock, Filter, File, ArrowLeft } from "lucide-react";
+import {useLocation, useNavigate} from "react-router-dom";
 
 import { getSupabaseClient } from "@/lib/supabase";
 import EmployeeNavbar from "@/pages/employee/employee-navbar";
 
 export default function EmployeeJobDetailsPage() {
   const location = useLocation();
+  const navigate = useNavigate();
   const searchParams = new URLSearchParams(location.search);
   const id = searchParams.get("id");
 
@@ -128,11 +129,7 @@ export default function EmployeeJobDetailsPage() {
         description: "Your proposal has been sent to the client.",
         color: "success",
       });
-
-      setCoverLetter("");
-      setProposedRate("");
-      setEstimatedDuration("");
-      setAttachments([]);
+      navigate("/employee/jobs");
     } catch (error: any) {
       throw error;
     }
@@ -159,6 +156,17 @@ export default function EmployeeJobDetailsPage() {
       <EmployeeNavbar />
 
       <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        <Link href="/employee/jobs">
+          <Button
+            className="mb-4"
+            color="primary"
+            href="/client/jobs"
+            startContent={<ArrowLeft className="h-4 w-4" />}
+            variant="solid"
+          >
+            Back to Jobs
+          </Button>
+        </Link>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Job Details */}
           <div className="lg:col-span-2">

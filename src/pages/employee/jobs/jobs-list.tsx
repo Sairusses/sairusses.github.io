@@ -181,8 +181,11 @@ export default function EmployeeJobsPage() {
                 <CardHeader>
                   <div className="flex justify-between w-full items-start">
                     <div className="flex-1">
-                      <div className="text-xl mb-2 font-bold capitalize">
+                      <div className="text-xl font-bold capitalize">
                         {job.title}
+                      </div>
+                      <div className="text-medium mb-2 text-gray-800">
+                        {job.client_name}
                       </div>
                       <div className="text-base text-gray-600">
                         {job.description}
@@ -198,35 +201,40 @@ export default function EmployeeJobsPage() {
                   </div>
                 </CardHeader>
                 <CardBody>
-                  <div className="flex flex-wrap gap-4 mb-4">
-                    {job.category && (
-                      <div className="flex items-center text-sm text-gray-600">
-                        <Filter className="h-4 w-4 mr-1" />
-                        {job.category}
+                  <div className="grid grid-cols-2 ">
+                    <div>
+                      <div className="flex flex-wrap gap-4 mb-4">
+                        {job.category && (
+                          <div className="flex items-center text-sm text-gray-600">
+                            <Filter className="h-4 w-4 mr-1" />
+                            {job.category}
+                          </div>
+                        )}
+                        <div className="text-sm text-gray-500">
+                          Posted {new Date(job.created_at).toLocaleDateString()}
+                        </div>
                       </div>
-                    )}
-                    <div className="text-sm text-gray-500">
-                      Posted {new Date(job.created_at).toLocaleDateString()}
-                    </div>
-                  </div>
 
-                  {job.required_skills && job.required_skills.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {job.required_skills.map((skill, index) => (
-                        <Chip key={index} color="default" radius="sm">
-                          {skill}
-                        </Chip>
-                      ))}
+                      {job.required_skills &&
+                        job.required_skills.length > 0 && (
+                          <div className="flex flex-wrap gap-2 mb-4">
+                            {job.required_skills.map((skill, index) => (
+                              <Chip key={index} color="default" radius="sm">
+                                {skill}
+                              </Chip>
+                            ))}
+                          </div>
+                        )}
                     </div>
-                  )}
 
-                  <div className="flex justify-end">
-                    <Link href={`/employee/jobs/details?id=${job.id}`}>
-                      <Button color="primary" size="sm">
-                        <Eye className="h-4 w-4 mr-2" />
-                        View & Apply
-                      </Button>
-                    </Link>
+                    <div className="flex justify-end">
+                      <Link href={`/employee/jobs/details?id=${job.id}`}>
+                        <Button color="primary" size="sm">
+                          <Eye className="h-4 w-4 mr-2" />
+                          View & Apply
+                        </Button>
+                      </Link>
+                    </div>
                   </div>
                 </CardBody>
               </Card>

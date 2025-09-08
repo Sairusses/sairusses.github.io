@@ -110,7 +110,6 @@ export function FileUpload({
       return `File size must be less than ${maxFileSize}MB`;
     }
 
-    // Check file type
     if (acceptedTypes.length > 0 && !acceptedTypes.includes("*")) {
       const isValidType = acceptedTypes.some((type) => {
         if (type.endsWith("/*")) {
