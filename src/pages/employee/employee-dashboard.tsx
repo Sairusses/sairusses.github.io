@@ -264,9 +264,11 @@ export default function EmployeeDashboard() {
             <CardBody>
               <div className="space-y-4">
                 {proposals.slice(0, 5).map((proposal) => (
-                  <div
+                  <Card
                     key={proposal.id}
-                    className="flex items-center justify-between p-4 border rounded-lg"
+                    className="p-4 grid grid-cols-2 justify-between"
+                    radius="sm"
+                    shadow="sm"
                   >
                     <div className="flex-1">
                       <h3 className="font-medium">{proposal.job?.title}</h3>
@@ -293,12 +295,12 @@ export default function EmployeeDashboard() {
                         )}
                       </div>
                     </div>
-                    <Link href="/employee/proposals">
+                    <Link className="justify-end" href="/employee/proposals">
                       <Button size="sm" variant="ghost">
                         <Eye className="h-4 w-4" />
                       </Button>
                     </Link>
-                  </div>
+                  </Card>
                 ))}
                 {proposals.length === 0 && (
                   <div className="text-center py-8 text-gray-500">

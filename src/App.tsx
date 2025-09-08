@@ -15,6 +15,7 @@ import EmployeeJobsPage from "@/pages/employee/jobs/jobs-list.tsx";
 import EmployeeJobDetailsPage from "@/pages/employee/jobs/employee-jobs-details.tsx";
 import ClientProfile from "@/pages/client/client-profile.tsx";
 import EmployeeProfile from "@/pages/employee/employee-profile.tsx";
+import EmployeeProposalsPage from "@/pages/employee/proposals/employee-proposals-list.tsx";
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
         <Route element={<EmployeeJobsPage />} path="/employee/jobs" />
         {/* eslint-disable-next-line */}
         <Route element={<EmployeeJobDetailsPage />} path="/employee/jobs/details" />
+        <Route element={<EmployeeProposalsPage />} path="/employee/proposals" />
       </Routes>
     </AuthProvider>
   );

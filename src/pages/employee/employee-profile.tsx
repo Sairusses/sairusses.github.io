@@ -1,4 +1,4 @@
-import { Button, Input, Textarea, Avatar, addToast, Chip } from "@heroui/react";
+import {Button, Input, Textarea, Avatar, addToast, Chip, Link} from "@heroui/react";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
@@ -404,14 +404,14 @@ export default function EmployeeProfile() {
                 <h2 className="text-lg font-semibold mb-2">Resume</h2>
                 {profile?.resume_url ? (
                   <div className="flex items-center gap-2">
-                    <a
+                    <Link
                       className="text-blue-600 hover:underline"
                       href={profile.resume_url}
                       rel="noopener noreferrer"
                       target="_blank"
                     >
                       View Resume
-                    </a>
+                    </Link>
                     <Button
                       isIconOnly
                       color="danger"

@@ -47,6 +47,7 @@ export interface Proposal {
   proposed_rate?: number;
   estimated_duration?: string;
   status: ProposalStatus;
+  attachments: string[];
   created_at: string;
   updated_at: string;
   job?: Job;
