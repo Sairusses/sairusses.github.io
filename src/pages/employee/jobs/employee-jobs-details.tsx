@@ -3,7 +3,7 @@ import type { Job } from "@/lib/types";
 import { useEffect, useState } from "react";
 import { Button, Chip, Input, Textarea, addToast, Link } from "@heroui/react";
 import { Card, CardBody, CardHeader } from "@heroui/card";
-import { DollarSign, Clock, Filter, File, User } from "lucide-react";
+import { Clock, Filter, File } from "lucide-react";
 import { useLocation } from "react-router-dom";
 
 import { getSupabaseClient } from "@/lib/supabase";
@@ -18,8 +18,16 @@ export default function EmployeeJobDetailsPage() {
 
   const [job, setJob] = useState<Job | null>(null);
   const [loading, setLoading] = useState(true);
-  const [proposal, setProposal] = useState("");
-  const [bidAmount, setBidAmount] = useState("");
+
+  // Proposal form states
+  const [coverLetter, setCoverLetter] = useState("");
+  const [proposedRate, setProposedRate] = useState("");
+  const [estimatedDuration, setEstimatedDuration] = useState("");
+  const [attachments, setAttachments] = useState<File[]>([]);
+
+  const handleRemoveAttachment = (index: number) => {
+    setAttachments((prev) => prev.filter((_, i) => i !== index));
+  };
 
   useEffect(() => {
     if (id) fetchJob(id);
@@ -48,10 +56,10 @@ export default function EmployeeJobDetailsPage() {
   };
 
   const handleApply = async () => {
-    if (!proposal || !bidAmount) {
+    if (!coverLetter || !proposedRate || !estimatedDuration) {
       addToast({
         title: "Missing fields",
-        description: "Please enter a proposal and bid amount.",
+        description: "Please fill out all required fields.",
         color: "warning",
       });
 
@@ -74,15 +82,46 @@ export default function EmployeeJobDetailsPage() {
         return;
       }
 
+      // --- Upload attachments only now ---
+      const uploadedFiles: string[] = [];
+
+      for (const file of attachments) {
+        const filePath = `proposals_attachments/${user.id}-${Date.now()}-${file.name}`;
+        const { error: uploadError } = await supabase.storage
+          .from("uploads")
+          .upload(filePath, file);
+
+        if (uploadError) {
+          addToast({
+            title: "Error uploading file",
+            description: uploadError.message,
+          });
+        }
+
+        const {
+          data: { publicUrl },
+        } = supabase.storage.from("uploads").getPublicUrl(filePath);
+
+        uploadedFiles.push(JSON.stringify({ name: file.name, url: publicUrl }));
+      }
+
       const { error } = await supabase.from("proposals").insert({
         job_id: job?.id,
         employee_id: user.id,
-        proposal,
-        bid_amount: parseFloat(bidAmount),
+        cover_letter: coverLetter,
+        proposed_rate: parseFloat(proposedRate),
+        estimated_duration: estimatedDuration,
         status: "pending",
+        attachments: uploadedFiles,
       });
 
-      if (error) throw error;
+      if (error) {
+        addToast({
+          title: "Error",
+          description: error.message,
+          color: "danger",
+        });
+      }
 
       addToast({
         title: "Application submitted",
@@ -90,15 +129,12 @@ export default function EmployeeJobDetailsPage() {
         color: "success",
       });
 
-      setProposal("");
-      setBidAmount("");
+      setCoverLetter("");
+      setProposedRate("");
+      setEstimatedDuration("");
+      setAttachments([]);
     } catch (error: any) {
-      console.error("Error applying to job:", error);
-      addToast({
-        title: "Error",
-        description: error.message,
-        color: "danger",
-      });
+      throw error;
     }
   };
 
@@ -122,120 +158,183 @@ export default function EmployeeJobDetailsPage() {
     <div className="min-h-screen bg-gray-50">
       <EmployeeNavbar />
 
-      <div className="max-w-5xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        <Card className="mb-6" radius="sm" shadow="sm">
-          <CardHeader>
-            <div className="flex justify-between w-full items-start">
-              <div>
-                <h1 className="text-2xl font-bold capitalize">{job.title}</h1>
-                <p className="text-gray-600">{job.description}</p>
-              </div>
-              <div className="text-right">
-                {job.budget_min !== undefined &&
-                  job.budget_max !== undefined && (
-                    <div className="flex items-center font-semibold text-green-600">
-                      <DollarSign className="h-4 w-4 mr-1" />₱{job.budget_min} -
-                      ₱{job.budget_max}
+      <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Job Details */}
+          <div className="lg:col-span-2">
+            <Card radius="sm" shadow="sm">
+              <CardHeader>
+                <div className="flex justify-between w-full items-start">
+                  <div>
+                    <h1 className="text-2xl font-bold capitalize">
+                      {job.title}
+                    </h1>
+                    <p className="text-gray-600">{job.description}</p>
+                  </div>
+                  <div className="text-right">
+                    {job.budget_min !== undefined &&
+                      job.budget_max !== undefined && (
+                        <div className="flex items-center font-semibold">
+                          ₱{job.budget_min} - ₱{job.budget_max}
+                        </div>
+                      )}
+                  </div>
+                </div>
+              </CardHeader>
+
+              <CardBody>
+                <div className="flex flex-wrap gap-4 mb-4">
+                  {job.category && (
+                    <div className="flex items-center text-sm text-gray-600">
+                      <Filter className="h-4 w-4 mr-1" />
+                      {job.category}
                     </div>
                   )}
-              </div>
-            </div>
-          </CardHeader>
-
-          <CardBody>
-            <div className="flex flex-wrap gap-4 mb-4">
-              {job.category && (
-                <div className="flex items-center text-sm text-gray-600">
-                  <Filter className="h-4 w-4 mr-1" />
-                  {job.category}
+                  {job.timeline && (
+                    <div className="flex items-center text-sm text-gray-600">
+                      <Clock className="h-4 w-4 mr-1" />
+                      {job.timeline}
+                    </div>
+                  )}
+                  <div className="text-sm text-gray-500 capitalize">
+                    Status: {job.status}
+                  </div>
                 </div>
-              )}
-              {job.timeline && (
-                <div className="flex items-center text-sm text-gray-600">
-                  <Clock className="h-4 w-4 mr-1" />
-                  {job.timeline}
-                </div>
-              )}
-              {job.client?.location && (
-                <div className="flex items-center text-sm text-gray-600">
-                  <User className="h-4 w-4 mr-1" />
-                  {job.client.location}
-                </div>
-              )}
-            </div>
 
-            {/* Skills (safe check) */}
-            {Array.isArray(job.required_skills) &&
-              job.required_skills.length > 0 && (
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {job.required_skills.map((skill, index) => (
-                    <Chip key={index} color="default" radius="sm">
-                      {skill}
-                    </Chip>
-                  ))}
-                </div>
-              )}
+                {/* Skills */}
+                {Array.isArray(job.required_skills) &&
+                  job.required_skills.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {job.required_skills.map((skill, index) => (
+                        <Chip key={index} color="default" radius="sm">
+                          {skill}
+                        </Chip>
+                      ))}
+                    </div>
+                  )}
 
-            {/* Files (safe check) */}
-            {Array.isArray(job.files) && job.files.length > 0 && (
-              <div className="mt-4">
-                <h3 className="font-semibold mb-2">Attachments</h3>
-                <ul className="list-disc ml-6">
-                  {job.files.map((file: any, index: number) => {
-                    let parsed;
+                {/* Files */}
+                {Array.isArray(job.files) && job.files.length > 0 && (
+                  <div className="mt-4">
+                    <h3 className="font-semibold mb-2">Attachments</h3>
+                    <ul className="list-disc ml-6">
+                      {job.files.map((file: any, index: number) => {
+                        let parsed;
 
-                    try {
-                      parsed = JSON.parse(file);
-                    } catch {
-                      return null;
-                    }
+                        try {
+                          parsed = JSON.parse(file);
+                        } catch {
+                          return null;
+                        }
 
-                    return (
-                      <li key={index}>
-                        <Link
-                          className="flex items-center gap-2 text-blue-600 hover:underline"
-                          href={parsed.url}
-                          rel="noopener noreferrer"
-                          target="_blank"
+                        return (
+                          <li key={index}>
+                            <Link
+                              className="flex items-center gap-2 text-blue-600 hover:underline"
+                              href={parsed.url}
+                              rel="noopener noreferrer"
+                              target="_blank"
+                            >
+                              <File className="h-4 w-4" /> {parsed.name}
+                            </Link>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                )}
+              </CardBody>
+            </Card>
+          </div>
+
+          {/* Proposal Form */}
+          <div className="lg:col-span-1">
+            <Card radius="sm" shadow="sm">
+              <CardHeader>
+                <h2 className="text-xl font-semibold">Submit a Proposal</h2>
+              </CardHeader>
+              <CardBody>
+                <Textarea
+                  className="mb-4"
+                  label="Cover Letter"
+                  labelPlacement="outside"
+                  minRows={5}
+                  placeholder="Introduce yourself and explain why you're a good fit..."
+                  value={coverLetter}
+                  onChange={(e) => setCoverLetter(e.target.value)}
+                />
+                <Input
+                  className="mb-4"
+                  label="Proposed Rate (₱)"
+                  labelPlacement="outside"
+                  placeholder="Enter your rate"
+                  type="number"
+                  value={proposedRate}
+                  onChange={(e) => setProposedRate(e.target.value)}
+                />
+                <Input
+                  className="mb-4"
+                  label="Estimated Duration"
+                  labelPlacement="outside"
+                  placeholder="e.g. 2 weeks, 1 month"
+                  value={estimatedDuration}
+                  onChange={(e) => setEstimatedDuration(e.target.value)}
+                />
+
+                {/* Attachments */}
+                <div className="mb-4 w-full">
+                  <label
+                    className="justify-center items-center cursor-pointer px-4 py-2 bg-gray-100 border border-gray-300 rounded-md text-sm hover:bg-gray-200"
+                    htmlFor="attachments"
+                  >
+                    + Add Attachment
+                  </label>
+                  <input
+                    multiple
+                    className="hidden"
+                    id="attachments"
+                    type="file"
+                    onChange={(e) => {
+                      const files = e.target.files
+                        ? Array.from(e.target.files)
+                        : [];
+
+                      if (files.length > 0) {
+                        setAttachments((prev) => [...prev, ...files]);
+                      }
+                    }}
+                  />
+
+                  {/* Show selected files */}
+                  <ul className="mt-2 space-y-2">
+                    {attachments.map((file, index) => (
+                      <li
+                        key={index}
+                        className="flex justify-between items-center bg-gray-50 px-3 py-2 rounded-md text-sm border border-gray-300"
+                      >
+                        <span className="truncate">{file.name}</span>
+                        <button
+                          className="ml-2 text-red-500 hover:text-red-700"
+                          type="button"
+                          onClick={() => handleRemoveAttachment(index)}
                         >
-                          <File className="h-4 w-4" /> {parsed.name}
-                        </Link>
+                          ✕
+                        </button>
                       </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            )}
-          </CardBody>
-        </Card>
+                    ))}
+                  </ul>
+                </div>
 
-        {/* Application Form */}
-        <Card radius="sm" shadow="sm">
-          <CardHeader>
-            <h2 className="text-xl font-semibold">Apply for this Job</h2>
-          </CardHeader>
-          <CardBody>
-            <Textarea
-              className="mb-4"
-              label="Proposal"
-              minRows={5}
-              placeholder="Write your proposal..."
-              value={proposal}
-              onChange={(e) => setProposal(e.target.value)}
-            />
-            <Input
-              className="mb-4"
-              label="Bid Amount (₱)"
-              placeholder="Enter your bid"
-              type="number"
-              value={bidAmount}
-              onChange={(e) => setBidAmount(e.target.value)}
-            />
-            <Button className="bg-blue-600 text-white" onClick={handleApply}>
-              Submit Proposal
-            </Button>
-          </CardBody>
-        </Card>
+                <Button
+                  className="bg-blue-600 text-white w-full"
+                  onClick={handleApply}
+                >
+                  Submit Proposal
+                </Button>
+              </CardBody>
+            </Card>
+          </div>
+        </div>
       </div>
     </div>
   );
