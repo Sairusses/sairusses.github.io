@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Button, Chip, Input, Textarea, addToast, Link } from "@heroui/react";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Clock, Filter, File, ArrowLeft } from "lucide-react";
-import {useLocation, useNavigate} from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { getSupabaseClient } from "@/lib/supabase";
 import EmployeeNavbar from "@/pages/employee/employee-navbar";
