@@ -113,7 +113,7 @@ export function SignupPage() {
           id: data.user?.id,
           email: formData.email,
           full_name: formData.fullName,
-          role: "employee",
+          role: "client",
         });
       }
 

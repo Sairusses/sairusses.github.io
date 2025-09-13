@@ -142,7 +142,7 @@ export default function ClientDashboard() {
                       <div className="flex items-center justify-between p-4 rounded-lg">
                         <div className="flex-1">
                           <h3 className="font-medium">{job.title}</h3>
-                          <p className="text-sm text-gray-600 truncate">
+                          <p className="text-sm text-gray-600 line-clamp-2">
                             {job.description}
                           </p>
                           <div className="flex items-center gap-2 mt-2">

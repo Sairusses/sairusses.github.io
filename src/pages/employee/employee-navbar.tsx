@@ -123,7 +123,7 @@ export default function EmployeeNavbar() {
         <NavbarItem className="hidden lg:flex">
           <Link
             className="text-gray-700 hover:text-blue-600 transition-colors text-lg font-medium pl-5"
-            href={"/"}
+            href={"/messages"}
           >
             Messages
           </Link>
