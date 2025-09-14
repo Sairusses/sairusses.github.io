@@ -31,7 +31,7 @@ function App() {
       <ToastProvider />
       <Routes>
         {/* Landing Page */}
-        <Route element={<IndexPage />} path="/" />
+        <Route element={<IndexPage />} path="" />
         {/* Authentication Pages*/}
         <Route element={<LoginPage />} path="/auth/login" />
         <Route element={<SignupPage />} path="/auth/signup" />
