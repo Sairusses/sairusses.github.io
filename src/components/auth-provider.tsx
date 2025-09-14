@@ -8,7 +8,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const [loading, setLoading] = useState(true);
 
-  const publicRoutes = ["/", "/auth/login", "/auth/signup"];
+  const publicRoutes = ["", "/", "/auth/login", "/auth/signup"];
 
   const clientRoutes = ["/client"];
   const employeeRoutes = ["/employee"];

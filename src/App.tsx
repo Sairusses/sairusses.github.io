@@ -27,7 +27,7 @@ import ClientContractDetailsPage from "@/pages/client/contracts/client-contract-
 /* eslint-disable */
 function App() {
   return (
-    <AuthProvider>
+    <>
       <ToastProvider />
       <Routes>
         {/* Landing Page */}
@@ -60,7 +60,7 @@ function App() {
         {/* Messages Page */}
         <Route element={<MessagesPage />} path="/messages" />
       </Routes>
-    </AuthProvider>
+    </>
   );
 }
 
