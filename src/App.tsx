@@ -20,6 +20,8 @@ import EmployeeProposalDetailsPage from "@/pages/employee/proposals/employee-pro
 import ClientProposalsList from "@/pages/client/proposals/client-proposals-list.tsx";
 import ClientProposalDetails from "@/pages/client/proposals/client-proposal-details.tsx";
 import MessagesPage from "@/pages/messages/messages.tsx";
+import EmployeeContractsPage from "@/pages/employee/contracts/employee-contracts.tsx";
+import EmployeeContractDetailsPage from "@/pages/employee/contracts/employee-contract-details.tsx";
 
 function App() {
   return (
@@ -39,6 +41,7 @@ function App() {
         <Route element={<ClientJobDetailsPage />} path="/client/jobs/details" />
         <Route element={<EditJobPage />} path="/client/jobs/edit/:id" />
         <Route element={<ClientProposalsList />} path="/client/proposals/" />
+        {/* eslint-disable-next-line */}
         <Route element={<ClientProposalDetails />} path="/client/proposals/details" />
 
         {/*  Employee Pages */}
@@ -50,6 +53,10 @@ function App() {
         <Route element={<EmployeeProposalsPage />} path="/employee/proposals" />
         {/* eslint-disable-next-line */}
         <Route element={<EmployeeProposalDetailsPage />} path="/employee/proposals/details" />
+        <Route element={<EmployeeContractsPage />} path="/employee/contracts" />
+        {/* eslint-disable-next-line */}
+        <Route element={<EmployeeContractDetailsPage />} path="/employee/contracts/details" />
+
         {/* Messages Page */}
         <Route element={<MessagesPage />} path="/messages" />
       </Routes>
