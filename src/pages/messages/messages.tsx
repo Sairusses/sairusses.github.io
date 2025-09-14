@@ -163,7 +163,6 @@ export default function MessagesPage() {
       setMessages((prev) => prev.filter((m) => m.id !== tempId));
       console.error(error);
     } else {
-      // replace optimistic with real DB message
       setMessages((prev) => prev.map((m) => (m.id === tempId ? data : m)));
     }
   };
