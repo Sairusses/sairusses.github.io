@@ -67,7 +67,7 @@ export default function indexPage() {
                     size="lg"
                     variant="ghost"
                   >
-                    Find Work as Freelancer
+                    Find Work as Employee
                   </Button>
                 </Link>
               </div>
@@ -114,7 +114,7 @@ export default function indexPage() {
                 </CardBody>
                 <CardFooter className="text-gray-500 text-center pb-8">
                   Built-in messaging system keeps you connected with your
-                  clients or freelancers throughout the project.
+                  clients or employees throughout the project.
                 </CardFooter>
               </Card>
 
