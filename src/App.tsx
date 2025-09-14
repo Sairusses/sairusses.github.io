@@ -22,7 +22,9 @@ import ClientProposalDetails from "@/pages/client/proposals/client-proposal-deta
 import MessagesPage from "@/pages/messages/messages.tsx";
 import EmployeeContractsPage from "@/pages/employee/contracts/employee-contracts.tsx";
 import EmployeeContractDetailsPage from "@/pages/employee/contracts/employee-contract-details.tsx";
-
+import ClientContracts from "@/pages/client/contracts/client-contracts.tsx";
+import ClientContractDetailsPage from "@/pages/client/contracts/client-contract-details.tsx";
+/* eslint-disable */
 function App() {
   return (
     <AuthProvider>
@@ -41,20 +43,18 @@ function App() {
         <Route element={<ClientJobDetailsPage />} path="/client/jobs/details" />
         <Route element={<EditJobPage />} path="/client/jobs/edit/:id" />
         <Route element={<ClientProposalsList />} path="/client/proposals/" />
-        {/* eslint-disable-next-line */}
         <Route element={<ClientProposalDetails />} path="/client/proposals/details" />
+        <Route element={<ClientContracts />} path="/client/contracts" />
+        <Route element={<ClientContractDetailsPage />} path="/client/contracts/details" />
 
         {/*  Employee Pages */}
         <Route element={<EmployeeDashboard />} path="/employee/dashboard" />
         <Route element={<EmployeeProfile />} path="/employee/profile" />
         <Route element={<EmployeeJobsPage />} path="/employee/jobs" />
-        {/* eslint-disable-next-line */}
         <Route element={<EmployeeJobDetailsPage />} path="/employee/jobs/details" />
         <Route element={<EmployeeProposalsPage />} path="/employee/proposals" />
-        {/* eslint-disable-next-line */}
         <Route element={<EmployeeProposalDetailsPage />} path="/employee/proposals/details" />
         <Route element={<EmployeeContractsPage />} path="/employee/contracts" />
-        {/* eslint-disable-next-line */}
         <Route element={<EmployeeContractDetailsPage />} path="/employee/contracts/details" />
 
         {/* Messages Page */}
