@@ -23,7 +23,7 @@ lib/constants.ts
 *.sln
 *.sw?
 
-
+.env
 pnpm-lock.yaml
 yarn.lock
 package-lock.json
