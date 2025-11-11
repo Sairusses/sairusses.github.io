@@ -9,6 +9,8 @@ import {
   Avatar,
   DropdownMenu,
   DropdownItem,
+  NavbarMenuToggle, // Imported for mobile menu
+  NavbarMenu, // Imported for mobile menu
   addToast,
 } from "@heroui/react";
 import { Briefcase } from "lucide-react";
@@ -16,9 +18,19 @@ import { useEffect, useState } from "react";
 
 import { supabase } from "@/lib/supabase.ts";
 
+// Define the navigation items for easy mapping
+const navItems = [
+  { name: "Dashboard", href: "/employee/dashboard" },
+  { name: "Browse Jobs", href: "/employee/jobs" },
+  { name: "Proposals", href: "/employee/proposals" },
+  { name: "Contracts", href: "/employee/contracts" },
+  { name: "Messages", href: "/messages" },
+];
+
 export default function EmployeeNavbar() {
   const [user, setUser] = useState<any>(null);
   const [userDB, setUserDB] = useState<any>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const fetchUser = async () => {
     try {
@@ -75,61 +87,43 @@ export default function EmployeeNavbar() {
   }
 
   return (
-    <Navbar isBordered shouldHideOnScroll maxWidth="full">
-      <NavbarContent className="hidden sm:flex gap-4" justify="start">
+    <Navbar
+      isBordered
+      maxWidth="full"
+      shouldHideOnScroll={true}
+      onMenuOpenChange={setIsMenuOpen} // Handle mobile menu state
+    >
+      {/* Navbar Content - Start (Brand and Mobile Toggle) */}
+      <NavbarContent justify="start">
+        {/* Mobile Menu Toggle - Only visible on small screens */}
+        <NavbarMenuToggle
+          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+          className="lg:hidden"
+        />
+        {/* Brand */}
         <NavbarBrand>
           <Briefcase className="h-8 w-8 text-blue-600" />
           <p className="font-bold text-inherit text-2xl">ManPower</p>
         </NavbarBrand>
       </NavbarContent>
+
+      {/* Navbar Content - Center (Desktop Links) */}
+      <NavbarContent className="hidden lg:flex gap-4" justify="center">
+        {navItems.map((item) => (
+          <NavbarItem key={item.name}>
+            <Link
+              className="text-gray-700 hover:text-blue-600 transition-colors text-lg font-medium"
+              href={item.href}
+            >
+              {item.name}
+            </Link>
+          </NavbarItem>
+        ))}
+      </NavbarContent>
+
+      {/* Navbar Content - End (Profile Dropdown) */}
       <NavbarContent justify="end">
-        {/* Dashboard */}
-        <NavbarItem className="hidden lg:flex">
-          <Link
-            className="text-gray-700 hover:text-blue-600 transition-colors text-lg font-medium"
-            href={"/employee/dashboard"}
-          >
-            Dashboard
-          </Link>
-        </NavbarItem>
-        {/* Jobs */}
-        <NavbarItem className="hidden lg:flex">
-          <Link
-            className="text-gray-700 hover:text-blue-600 transition-colors text-lg font-medium pl-5"
-            href={"/employee/jobs"}
-          >
-            Browse Jobs
-          </Link>
-        </NavbarItem>
-        {/* Proposals */}
-        <NavbarItem className="hidden lg:flex">
-          <Link
-            className="text-gray-700 hover:text-blue-600 transition-colors text-lg font-medium pl-5"
-            href={"/employee/proposals"}
-          >
-            Proposals
-          </Link>
-        </NavbarItem>
-        {/* Contracts */}
-        <NavbarItem className="hidden lg:flex">
-          <Link
-            className="text-gray-700 hover:text-blue-600 transition-colors text-lg font-medium pl-5"
-            href={"/employee/contracts"}
-          >
-            Contracts
-          </Link>
-        </NavbarItem>
-        {/* Messages */}
-        <NavbarItem className="hidden lg:flex">
-          <Link
-            className="text-gray-700 hover:text-blue-600 transition-colors text-lg font-medium pl-5"
-            href={"/messages"}
-          >
-            Messages
-          </Link>
-        </NavbarItem>
-        <span />
-        {/* Profile */}
+        {/* Profile Dropdown (always visible) */}
         <Dropdown placement="bottom-end">
           <DropdownTrigger>
             <Avatar
@@ -161,6 +155,21 @@ export default function EmployeeNavbar() {
           </DropdownMenu>
         </Dropdown>
       </NavbarContent>
+
+      {/* Mobile Menu - Only appears when toggled */}
+      <NavbarMenu>
+        {navItems.map((item, index) => (
+          <NavbarItem key={`${item.name}-${index}`}>
+            <Link
+              className="w-full text-xl font-medium text-gray-700 hover:text-blue-600 transition-colors py-2"
+              href={item.href}
+              size="lg"
+            >
+              {item.name}
+            </Link>
+          </NavbarItem>
+        ))}
+      </NavbarMenu>
     </Navbar>
   );
 }

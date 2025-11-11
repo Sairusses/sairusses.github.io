@@ -7,7 +7,16 @@ import {
   Search,
   Zap,
 } from "lucide-react";
-import { Navbar, NavbarContent, NavbarItem, Link, Button } from "@heroui/react";
+import {
+  Navbar,
+  NavbarContent,
+  NavbarItem,
+  Link,
+  Button,
+  NavbarMenuToggle,
+  NavbarBrand,
+  NavbarMenu,
+} from "@heroui/react";
 
 import Footer from "@/components/footer";
 export default function indexPage() {
@@ -16,20 +25,28 @@ export default function indexPage() {
       <div className="flex flex-col items-center justify-center w-full">
         {/* Navigation Bar */}
         <Navbar isBordered maxWidth="full" shouldHideOnScroll={true}>
-          <NavbarContent className="hidden sm:flex gap-4" justify="start">
-            <NavbarItem>
+          {/* Navbar Content - Start (Brand and Mobile Toggle) */}
+          <NavbarContent justify="start">
+            {/* Mobile Menu Toggle (Visible only on screens smaller than lg) */}
+            <NavbarMenuToggle className="lg:hidden" />
+
+            {/* Brand/Logo (Visible on all screens) */}
+            <NavbarBrand>
               <Briefcase className="h-8 w-8 text-blue-600" />
-            </NavbarItem>
-            <NavbarItem>
               <p className="font-bold text-inherit text-2xl">ManPower</p>
-            </NavbarItem>
+            </NavbarBrand>
           </NavbarContent>
+
+          {/* Navbar Content - End (Desktop Buttons) */}
           <NavbarContent justify="end">
+            {/* Sign In Button (Visible only on large screens) */}
             <NavbarItem className="hidden lg:flex">
               <Link href="/auth/login">
                 <Button variant="light">Sign In</Button>
               </Link>
             </NavbarItem>
+
+            {/* Get Started Button (Visible on all screens) */}
             <NavbarItem>
               <Link href="/auth/signup">
                 <Button className="bg-blue-600 hover:bg-blue-700 text-white">
@@ -38,6 +55,26 @@ export default function indexPage() {
               </Link>
             </NavbarItem>
           </NavbarContent>
+
+          {/* Mobile Menu */}
+          <NavbarMenu>
+            {/* Sign In Link in Mobile Menu */}
+            <NavbarItem className="w-full">
+              <Link className="w-full" href="/auth/login">
+                <Button className="w-full text-xl py-4" variant="light">
+                  Sign In
+                </Button>
+              </Link>
+            </NavbarItem>
+            {/* Get Started (Optional to repeat, but usually the main CTA stays in the main navbar) */}
+            <NavbarItem className="w-full">
+              <Link className="w-full" href="/auth/signup">
+                <Button className="bg-blue-600 hover:bg-blue-700 text-white w-full text-xl py-4">
+                  Get Started
+                </Button>
+              </Link>
+            </NavbarItem>
+          </NavbarMenu>
         </Navbar>
         {/* Hero Section */}
         <section className="bg-gradient-to-br from-blue-50 to-white py-20 w-full">
