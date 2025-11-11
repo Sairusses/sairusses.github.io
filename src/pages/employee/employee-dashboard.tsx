@@ -64,19 +64,12 @@ export default function EmployeeDashboard() {
       // Fetch user's contracts
       const { data: contractsData } = await supabase
         .from("contracts")
-        .select(
-          `
-          *,
-          job:jobs(*),
-          client:users(*)
-        `,
-        )
-        .eq("employee_id", user?.id)
-        .order("created_at", { ascending: false });
+        .select(`*`)
+        .eq("employee_id", user?.id);
 
       setJobs(jobsData || []);
       setProposals(proposalsData || []);
-      setContracts(contractsData || []);
+      setContracts((contractsData as Contract[]) || []);
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
     } finally {
