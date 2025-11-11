@@ -5,12 +5,13 @@ import { Briefcase, Edit, Eye, FileText, Plus, Users } from "lucide-react";
 
 import ClientNavbar from "@/pages/client/client-navbar.tsx";
 import { supabase } from "@/lib/supabase.ts";
-import { Job } from "@/lib/types.ts";
+import {Job, Proposal} from "@/lib/types.ts";
 
 export default function ClientDashboard() {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [jobs, setJobs] = useState<Job[]>([]);
+  const [proposals, setProposals] = useState<Proposal[]>([]);
 
   const fetchUser = async () => {
     try {
@@ -42,7 +43,30 @@ export default function ClientDashboard() {
       .eq("client_id", user?.id)
       .order("created_at", { ascending: false });
 
-    setJobs(jobsData || []);
+
+    const jobs = jobsData || [];
+
+    setJobs(jobs);
+
+    const proposalPromises = jobs.map((job) => {
+      return supabase
+        .from("proposals")
+        .select("*")
+        .eq("job_id", job.id)
+        .eq("status", "pending");
+    });
+
+    const proposalResults = await Promise.all(proposalPromises);
+
+    const allProposals = proposalResults.reduce((acc, result) => {
+      if (result.error) {
+        return acc;
+      }
+
+      return acc.concat(result.data || []);
+    }, [] as Proposal[]);
+
+    setProposals(allProposals);
   };
 
   useEffect(() => {
@@ -52,6 +76,7 @@ export default function ClientDashboard() {
   }, [user]);
 
   const stats = {
+    totalProposals: proposals.length,
     totalJobs: jobs.length,
     activeJobs: jobs.filter((job) => job.status === "open").length,
   };
@@ -110,7 +135,7 @@ export default function ClientDashboard() {
               <FileText className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardBody className="items-start pl-10 py-0">
-              <div className="text-2xl font-bold">1</div>
+              <div className="text-2xl font-bold">{stats.totalProposals}</div>
               <div className="text-sm text-gray-600 pb-5">
                 Awaiting your review
               </div>
